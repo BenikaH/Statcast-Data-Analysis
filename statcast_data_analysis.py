@@ -34,6 +34,13 @@ def pitchSeparation(pitch1, pitch2, pitch3, pitch4, pitch5):
 			separation_list.append(velocity_list[i]-velocity_list[j])
 	return separation_list
 
+def velocityVariance(pitch_subset, velocity):
+	vel_array = []
+	for pitch in pitch_subset:
+		vel_array.append(velocity[pitch])
+	vel_array = np.array(vel_array)
+	return vel_array.var()
+
 class Game(object):
 	def __init__(self, date):
 		self.date = date
@@ -136,16 +143,14 @@ velocity = []
 rel_x = []
 rel_z = []
 
-with open('wainwright_2017.csv', newline='') as f:
+with open('Wainwright_July.csv', newline='') as f:
     reader = csv.reader(f)
-    header = 1
     for row in reader:
-    	if row[2].isdigit():
-	        pitch_type.append(row[0])
-	        date.append(row[1])
-	        velocity.append(float(row[2]))
-	        rel_x.append(float(row[3]))
-	        rel_z.append(float(row[4]))
+        pitch_type.append(row[0])
+        date.append(row[1])
+        velocity.append(float(row[2]))
+        rel_x.append(float(row[3]))
+        rel_z.append(float(row[4]))
 
 N_TOTAL = len(pitch_type)
 
@@ -160,6 +165,8 @@ sinker = [] # SI
 change = [] # CH
 non_classified = []
 
+print(len(velocity))
+print(N_TOTAL)
 for i in range(len(velocity)):
 	if pitch_type[i] == 'FF':
 		fastball.append(i)
@@ -219,6 +226,24 @@ print(avg_freq_SI)
 print('Average Change Frequency')
 print(avg_freq_CH)
 
+
+avg_velvar_FF = velocityVariance(fastball,velocity)
+avg_velvar_CU = velocityVariance(curveball,velocity)
+avg_velvar_FC = velocityVariance(cutter,velocity)
+avg_velvar_SI = velocityVariance(sinker,velocity)
+avg_velvar_CH = velocityVariance(change,velocity)
+
+print('Average Fastball Velocity Var')
+print(avg_velvar_FF)
+print('Average Curveball Velocity Var')
+print(avg_velvar_CU)
+print('Average Cutter Velocity Var')
+print(avg_velvar_FC)
+print('Average Sinker Velocity Var')
+print(avg_velvar_SI)
+print('Average Change Velocity Var')
+print(avg_velvar_CH)
+
 avg_relx_FF, avg_relz_FF = averageRelease(fastball,rel_x,rel_z)
 avg_relx_CU, avg_relz_CU = averageRelease(curveball,rel_x,rel_z)
 avg_relx_FC, avg_relz_FC = averageRelease(cutter,rel_x,rel_z)
@@ -227,6 +252,11 @@ avg_relx_CH, avg_relz_CH = averageRelease(change,rel_x,rel_z)
 
 avg_vel_separation = pitchSeparation(avg_vel_FF ,avg_vel_CU, avg_vel_FC, avg_vel_SI, avg_vel_CH)
 
+for sep in avg_vel_separation:
+	print(sep)
+
+print(len(change))
+
 wainright_games = makeGames(date)
 
 
@@ -234,8 +264,8 @@ for i in range(len(wainright_games)):
 	wainright_games[i].sortPitches(pitch_type)
 	wainright_games[i].calcMetrics(velocity, rel_x, rel_z)
 
-for i in range(len(wainright_games)):
-	print(wainright_games[i].game_vel_FC)
+#for i in range(len(wainright_games)):
+	#print(wainright_games[i].game_vel_FC)
 
 '''
 error_fastball = []
