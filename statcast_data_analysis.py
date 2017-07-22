@@ -143,20 +143,16 @@ velocity = []
 rel_x = []
 rel_z = []
 
-with open('Wainwright_July.csv', newline='') as f:
+with open('wainwright_2017_processed.csv', newline='') as f:
     reader = csv.reader(f)
     for row in reader:
         pitch_type.append(row[0])
         date.append(row[1])
-        velocity.append(float(row[2]))
-        rel_x.append(float(row[3]))
-        rel_z.append(float(row[4]))
+        velocity.append(row[2])
+        rel_x.append(row[3])
+        rel_z.append(row[4])
 
 N_TOTAL = len(pitch_type)
-
-pitch_type = np.array(pitch_type)
-date = np.array(date)
-velocity = np.array(velocity)
 
 fastball = [] # FF
 curveball = [] # CU
@@ -165,8 +161,6 @@ sinker = [] # SI
 change = [] # CH
 non_classified = []
 
-print(len(velocity))
-print(N_TOTAL)
 for i in range(len(velocity)):
 	if pitch_type[i] == 'FF':
 		fastball.append(i)
@@ -180,6 +174,26 @@ for i in range(len(velocity)):
 		change.append(i)
 	else:
 		non_classified.append(i)
+
+print('Non Classified')
+print(non_classified)
+
+for i in non_classified:
+	velocity[i] = 0
+	rel_x[i] = 0
+	rel_z[i] = 0
+
+print(velocity[610])
+
+for i in range(len(velocity)):
+	print(i)
+	velocity[i] = float(velocity[i])
+	rel_x[i] = float(rel_x[i])
+	rel_z[i] = float(rel_z[i])
+
+velocity = np.array(velocity)
+rel_x = np.array(rel_x)
+rel_z = np.array(rel_z)
 
 print('Fastballs')
 print(fastball)
