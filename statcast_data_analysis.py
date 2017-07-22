@@ -41,6 +41,12 @@ def velocityVariance(pitch_subset, velocity):
 	vel_array = np.array(vel_array)
 	return vel_array.var()
 
+def verifyResults(games,result_dates):
+	if len(games) == len(result_dates):
+		return True
+	else:
+		return False
+
 class Game(object):
 	def __init__(self, date):
 		self.date = date
@@ -142,6 +148,9 @@ date = []
 velocity = []
 rel_x = []
 rel_z = []
+
+result_date = np.loadtxt('wainwright_game_summary.csv', delimiter=',',usecols = (0,), unpack = True)
+result_era = np.loadtxt('wainwright_game_summary.csv', delimiter=',',usecols = (5,), unpack = True)
 
 with open('wainwright_2017_processed.csv', newline='') as f:
     reader = csv.reader(f)
@@ -278,14 +287,9 @@ for i in range(len(wainright_games)):
 	wainright_games[i].sortPitches(pitch_type)
 	wainright_games[i].calcMetrics(velocity, rel_x, rel_z)
 
+print(result_date)
+print(result_era)
+
+print(verifyResults(wainright_games,result_date))
 #for i in range(len(wainright_games)):
 	#print(wainright_games[i].game_vel_FC)
-
-'''
-error_fastball = []
-for i in range(len(velocity)):
-	if (pitch_type[i] == 'FF') and velocity[i] < 85:
-		error_fastball.append(i)
-
-print(error_fastball)
-'''
