@@ -35,6 +35,8 @@ def pitchSeparation(pitch1, pitch2, pitch3, pitch4, pitch5):
 	return separation_list
 
 def velocityVariance(pitch_subset, velocity):
+	if len(pitch_subset) == 0:
+		return 0
 	vel_array = []
 	for pitch in pitch_subset:
 		vel_array.append(velocity[pitch])
@@ -46,6 +48,8 @@ def verifyResults(games,result_dates):
 		return True
 	else:
 		return False
+
+
 
 class Game(object):
 	def __init__(self, date):
@@ -104,6 +108,12 @@ class Game(object):
 		self.game_relx_SI, self.game_relz_SI = averageRelease(self.game_sinker, rel_x, rel_z)
 		self.game_relx_CH, self.game_relz_CH = averageRelease(self.game_change, rel_x, rel_z)
 
+		self.game_velvar_FF = velocityVariance(self.game_fastball,velocity)
+		self.game_velvar_CU = velocityVariance(self.game_curveball,velocity)
+		self.game_velvar_FC = velocityVariance(self.game_cutter,velocity)
+		self.game_velvar_SI = velocityVariance(self.game_sinker,velocity)
+		self.game_velvar_CH = velocityVariance(self.game_change,velocity)
+
 		self.game_vel_separation = pitchSeparation(self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH)
 
 
@@ -121,6 +131,18 @@ class Game(object):
 				self.game_change.append(i)
 			else:
 				self.game_non_classified.append(i)
+
+	def outputData(self):
+		output_row = np.array([self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH, \
+		self.game_freq_FF, self.game_freq_CU, self.game_freq_FC, self.game_freq_SI, self.game_freq_CH, \
+		self.game_relx_FF, self.game_relx_CU, self.game_relx_FC, self.game_relx_SI, self.game_relx_CH, \
+		self.game_relz_FF, self.game_relz_CU, self.game_relz_FC, self.game_relz_SI, self.game_relz_CH, \
+		self.game_velvar_FF, self.game_velvar_CU, self.game_velvar_FC, self.game_velvar_SI, self.game_velvar_CH, \
+		self.game_vel_separation[0], self.game_vel_separation[1], self.game_vel_separation[2], self.game_vel_separation[3], \
+		self.game_vel_separation[4], self.game_vel_separation[5], self.game_vel_separation[6], self.game_vel_separation[7], \
+		self.game_vel_separation[8], self.game_vel_separation[9]])
+		return output_row
+		
 
 
 
@@ -184,18 +206,17 @@ for i in range(len(velocity)):
 	else:
 		non_classified.append(i)
 
+'''
 print('Non Classified')
 print(non_classified)
+'''
 
 for i in non_classified:
 	velocity[i] = 0
 	rel_x[i] = 0
 	rel_z[i] = 0
 
-print(velocity[610])
-
 for i in range(len(velocity)):
-	print(i)
 	velocity[i] = float(velocity[i])
 	rel_x[i] = float(rel_x[i])
 	rel_z[i] = float(rel_z[i])
@@ -204,6 +225,7 @@ velocity = np.array(velocity)
 rel_x = np.array(rel_x)
 rel_z = np.array(rel_z)
 
+'''
 print('Fastballs')
 print(fastball)
 print('Curveballs')
@@ -214,6 +236,7 @@ print('Change-ups')
 print(change)
 print('Non Classified')
 print(non_classified)
+'''
 
 avg_vel_FF = averageVelocity(fastball,velocity)
 avg_vel_CU = averageVelocity(curveball,velocity)
@@ -221,6 +244,7 @@ avg_vel_FC = averageVelocity(cutter,velocity)
 avg_vel_SI = averageVelocity(sinker,velocity)
 avg_vel_CH = averageVelocity(change,velocity)
 
+'''
 print('Average Fastball Velocity')
 print(avg_vel_FF)
 print('Average Curveball Velocity')
@@ -231,6 +255,7 @@ print('Average Sinker Velocity')
 print(avg_vel_SI)
 print('Average Change Velocity')
 print(avg_vel_CH)
+'''
 
 avg_freq_FF = pitchFrequency(fastball, N_TOTAL)
 avg_freq_CU = pitchFrequency(curveball, N_TOTAL)
@@ -238,6 +263,7 @@ avg_freq_FC = pitchFrequency(cutter, N_TOTAL)
 avg_freq_SI = pitchFrequency(sinker, N_TOTAL)
 avg_freq_CH = pitchFrequency(change, N_TOTAL)
 
+'''
 print('Average Fastball Frequency')
 print(avg_freq_FF)
 print('Average Curveball Frequency')
@@ -248,7 +274,7 @@ print('Average Sinker Frequency')
 print(avg_freq_SI)
 print('Average Change Frequency')
 print(avg_freq_CH)
-
+'''
 
 avg_velvar_FF = velocityVariance(fastball,velocity)
 avg_velvar_CU = velocityVariance(curveball,velocity)
@@ -256,6 +282,7 @@ avg_velvar_FC = velocityVariance(cutter,velocity)
 avg_velvar_SI = velocityVariance(sinker,velocity)
 avg_velvar_CH = velocityVariance(change,velocity)
 
+'''
 print('Average Fastball Velocity Var')
 print(avg_velvar_FF)
 print('Average Curveball Velocity Var')
@@ -266,6 +293,7 @@ print('Average Sinker Velocity Var')
 print(avg_velvar_SI)
 print('Average Change Velocity Var')
 print(avg_velvar_CH)
+'''
 
 avg_relx_FF, avg_relz_FF = averageRelease(fastball,rel_x,rel_z)
 avg_relx_CU, avg_relz_CU = averageRelease(curveball,rel_x,rel_z)
@@ -275,21 +303,29 @@ avg_relx_CH, avg_relz_CH = averageRelease(change,rel_x,rel_z)
 
 avg_vel_separation = pitchSeparation(avg_vel_FF ,avg_vel_CU, avg_vel_FC, avg_vel_SI, avg_vel_CH)
 
-for sep in avg_vel_separation:
-	print(sep)
-
-print(len(change))
-
-wainright_games = makeGames(date)
+wainwright_games = makeGames(date)
 
 
-for i in range(len(wainright_games)):
-	wainright_games[i].sortPitches(pitch_type)
-	wainright_games[i].calcMetrics(velocity, rel_x, rel_z)
+for i in range(len(wainwright_games)):
+	wainwright_games[i].sortPitches(pitch_type)
+	wainwright_games[i].calcMetrics(velocity, rel_x, rel_z)
 
-print(result_date)
-print(result_era)
 
-print(verifyResults(wainright_games,result_date))
-#for i in range(len(wainright_games)):
-	#print(wainright_games[i].game_vel_FC)
+print(verifyResults(wainwright_games,result_date))
+
+X = wainwright_games[0].outputData()
+for i in range(1,len(wainwright_games)):
+	game_output = wainwright_games[i].outputData()
+	X = np.vstack((X, game_output))
+
+# Correction for game with no change-up pitches
+X[5,4] = avg_vel_CH
+X[5,14] = avg_relx_CH
+X[5,19] = avg_relz_CH
+X[5,24] = 0
+X[5,28] = avg_vel_separation[3]
+X[5,31] = avg_vel_separation[6]
+X[5,33] = avg_vel_separation[8]
+X[5,34] = avg_vel_separation[9]
+
+
