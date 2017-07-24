@@ -1,4 +1,5 @@
 # Functions to support the statcast data analysis
+import numpy as np
 
 def averageVelocity(pitch_subset):
 	if len(pitch_subset) == 0:

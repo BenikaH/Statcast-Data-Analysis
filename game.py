@@ -1,5 +1,5 @@
 # Game object class
-
+import numpy as np
 from pitch import *
 from pitching_data_functions import *
 
@@ -43,46 +43,46 @@ class Game(object):
 		self.game_vel_separation = []
 
 	def calcMetrics(self):
-		self.pitch_count = len(game_pitches)
+		self.pitch_count = len(self.game_pitches)
 
-		self.game_vel_FF = averageVelocity(self.game_fastball)
-		self.game_vel_CU = averageVelocity(self.game_curveball)
-		self.game_vel_FC = averageVelocity(self.game_cutter)
-		self.game_vel_SI = averageVelocity(self.game_sinker)
-		self.game_vel_CH = averageVelocity(self.game_change)
+		self.game_vel_FF = averageVelocity(self.game_fastballs)
+		self.game_vel_CU = averageVelocity(self.game_curveballs)
+		self.game_vel_FC = averageVelocity(self.game_cutters)
+		self.game_vel_SI = averageVelocity(self.game_sinkers)
+		self.game_vel_CH = averageVelocity(self.game_changes)
 
-		self.game_freq_FF = pitchFrequency(self.game_fastball, self.pitch_count)
-		self.game_freq_CU = pitchFrequency(self.game_curveball, self.pitch_count)
-		self.game_freq_FC = pitchFrequency(self.game_cutter, self.pitch_count)
-		self.game_freq_SI = pitchFrequency(self.game_sinker, self.pitch_count)
-		self.game_freq_CH = pitchFrequency(self.game_change, self.pitch_count)
+		self.game_freq_FF = pitchFrequency(self.game_fastballs, self.pitch_count)
+		self.game_freq_CU = pitchFrequency(self.game_curveballs, self.pitch_count)
+		self.game_freq_FC = pitchFrequency(self.game_cutters, self.pitch_count)
+		self.game_freq_SI = pitchFrequency(self.game_sinkers, self.pitch_count)
+		self.game_freq_CH = pitchFrequency(self.game_changes, self.pitch_count)
 
-		self.game_relx_FF, self.game_relz_FF = averageRelease(self.game_fastball)
-		self.game_relx_CU, self.game_relz_CU = averageRelease(self.game_curveball)
-		self.game_relx_FC, self.game_relz_FC = averageRelease(self.game_cutter)
-		self.game_relx_SI, self.game_relz_SI = averageRelease(self.game_sinker)
-		self.game_relx_CH, self.game_relz_CH = averageRelease(self.game_change)
+		self.game_relx_FF, self.game_relz_FF = averageRelease(self.game_fastballs)
+		self.game_relx_CU, self.game_relz_CU = averageRelease(self.game_curveballs)
+		self.game_relx_FC, self.game_relz_FC = averageRelease(self.game_cutters)
+		self.game_relx_SI, self.game_relz_SI = averageRelease(self.game_sinkers)
+		self.game_relx_CH, self.game_relz_CH = averageRelease(self.game_changes)
 
-		self.game_velvar_FF = velocityVariance(self.game_fastball)
-		self.game_velvar_CU = velocityVariance(self.game_curveball)
-		self.game_velvar_FC = velocityVariance(self.game_cutter)
-		self.game_velvar_SI = velocityVariance(self.game_sinker)
-		self.game_velvar_CH = velocityVariance(self.game_change)
+		self.game_velvar_FF = velocityVariance(self.game_fastballs)
+		self.game_velvar_CU = velocityVariance(self.game_curveballs)
+		self.game_velvar_FC = velocityVariance(self.game_cutters)
+		self.game_velvar_SI = velocityVariance(self.game_sinkers)
+		self.game_velvar_CH = velocityVariance(self.game_changes)
 
 		self.game_vel_separation = pitchSeparation(self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH)
 
 	def sortPitches(self):
 		for pitch in self.game_pitches:
 			if pitch.pitch_type == 'FF':
-				self.game_fastball.append(pitch)
+				self.game_fastballs.append(pitch)
 			elif pitch.pitch_type == 'CU':
-				self.game_curveball.append(pitch)
+				self.game_curveballs.append(pitch)
 			elif pitch.pitch_type == 'FC':
-				self.game_cutter.append(pitch)
+				self.game_cutters.append(pitch)
 			elif pitch.pitch_type == 'SI':
-				self.game_sinker.append(pitch)
+				self.game_sinkers.append(pitch)
 			elif pitch.pitch_type == 'CH':
-				self.game_change.append(pitch)
+				self.game_changes.append(pitch)
 			else:
 				self.game_non_classified.append(pitch)
 
@@ -98,6 +98,6 @@ class Game(object):
 		return output_row
 
 	def runPipeline(self):
-		sortPitches()
-		calcMetrics()
+		self.sortPitches()
+		self.calcMetrics()
 
