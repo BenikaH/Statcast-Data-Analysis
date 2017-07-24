@@ -42,3 +42,17 @@ def pitchSeparation(pitch1, pitch2, pitch3, pitch4, pitch5):
 		for j in range((i+1),len(velocity_list)):
 			separation_list.append(velocity_list[i]-velocity_list[j])
 	return separation_list
+
+def averagePfx(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0, 0
+	total_x = 0
+	total_z = 0
+	for pitch in pitch_subset:
+		total_x = total_x + pitch.pfx_x
+		total_z = total_z + pitch.pfx_z
+	avg_pfx_x = float(total_x/len(pitch_subset))
+	avg_pfx_z = float(total_z/len(pitch_subset))
+	return avg_pfx_x, avg_pfx_z
+
+
