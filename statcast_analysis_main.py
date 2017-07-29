@@ -20,4 +20,3 @@ for game in pitcher1.game_list:
 	print(game.date)
 	print(game.pitch_count)
 	print(game.game_vel_FF)
-	print(game.game_pitches[0].outcome)

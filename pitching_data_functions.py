@@ -55,7 +55,22 @@ def averagePfx(pitch_subset):
 	avg_pfx_z = float(total_z/len(pitch_subset))
 	return avg_pfx_x, avg_pfx_z
 
-def strikeFrequency(pitch_subset):
+def releaseDeviation(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0, 0
+	x_array = []
+	z_array = []
+	for pitch in pitch_subset:
+		x_array.append(pitch.pfx_x)
+		z_array.append(pitch.pfx_z)
+	x_array = np.array(x_array)
+	z_array = np.array(z_array)
+	stdev_x = np.std(x_array)
+	stdev_z = np.std(z_array)
+	return stdev_x, stdev_z
+
+
+def strikeFrequency(pitch_subset, contact_counts):
 	if len(pitch_subset) == 0:
 		return 0
 	subset_total = len(pitch_subset)
@@ -69,7 +84,10 @@ def strikeFrequency(pitch_subset):
 			ball_count += 1
 		elif pitch.outcome == 'X':
 			contact_count += 1
-	strike_freq = float(strike_count / subset_total)
+	if contact_counts == True:
+		strike_freq = float((strike_count + contact_count) / subset_total)
+	else:
+		strike_freq = float(strike_count / subset_total)
 	return strike_freq
 
 
