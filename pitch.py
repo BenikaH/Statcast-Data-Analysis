@@ -2,7 +2,7 @@
 import numpy as np
 
 class Pitch(object):
-	def __init__(self, date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z):
+	def __init__(self, date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome):
 		self.pitch_date = date
 		self.pitch_type = pitch_type
 		if velocity.isalpha():
@@ -40,6 +40,7 @@ class Pitch(object):
 			self.pitch_type = 'null'
 		else:
 			self.pfx_z = float(pfx_z)
+		self.outcome = outcome
 
 	def getData(self):
 		output = np.array([self.pitch_date, self.pitch_type, self.velocity, self.rel_x, self.rel_z])

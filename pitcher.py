@@ -56,7 +56,7 @@ class Pitcher(object):
 		# Arrays for date of game results, game era, and quality starts
 		self.result_dates = []
 		self.result_eras = []
-		self.QS = []
+		self.quality_start = []
 
 	def importPitches(self, filename):
 		with open(filename, newline='') as file:
@@ -70,7 +70,8 @@ class Pitcher(object):
 		    	zone = row[14]
 		    	pfx_x = row[27]
 		    	pfx_z = row[28]
-		    	self.pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z))
+		    	outcome = row[21]
+		    	self.pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome))
 
 	def calcMetrics():
 		pass
@@ -84,7 +85,7 @@ class Pitcher(object):
 			if self.pitch_list[i].pitch_date == current_day:
 				self.game_list[game].game_pitches.append(self.pitch_list[i])
 			else:
-				game = game + 1
+				game += 1
 				current_day = self.pitch_list[i].pitch_date
 				self.game_list.append(Game(current_day))
 				self.game_list[game].game_pitches.append(self.pitch_list[i])
@@ -107,6 +108,6 @@ class Pitcher(object):
 	def addGameResults(self, filename):
 		self.result_dates = np.loadtxt(filename, delimiter=',',usecols = (0,), unpack = True)
 		self.result_eras = np.loadtxt(filename, delimiter=',',usecols = (5,), unpack = True)
-		self.QS = np.loadtxt(filename, delimiter=',',usecols = (6,), unpack = True)
+		self.quality_start = np.loadtxt(filename, delimiter=',',usecols = (6,), unpack = True)
 
 

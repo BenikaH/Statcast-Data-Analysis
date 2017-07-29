@@ -7,14 +7,17 @@ from pitching_data_functions import *
 
 # Main analysis script to go here
 
-wainwright = Pitcher('Wainwright','wainwright_2017_processed.csv')
-wainwright.makeGames()
-for game in wainwright.game_list:
+pitcher_name = 'Wainwright'
+pitcher_data_file = 'wainwright_2017.csv'
+
+pitcher1 = Pitcher('Wainwright','wainwright_2017.csv')
+pitcher1.makeGames()
+for game in pitcher1.game_list:
 	game.runPipeline()
 
-for game in wainwright.game_list:
+print(pitcher1.name)
+for game in pitcher1.game_list:
 	print(game.date)
 	print(game.pitch_count)
 	print(game.game_vel_FF)
-
-
+	print(game.game_pitches[0].outcome)

@@ -6,7 +6,7 @@ def averageVelocity(pitch_subset):
 		return 0
 	total_vel = 0
 	for pitch in pitch_subset:
-		total_vel = total_vel + pitch.velocity
+		total_vel += pitch.velocity
 	avg_vel = float(total_vel/len(pitch_subset))
 	return avg_vel
 
@@ -29,8 +29,8 @@ def averageRelease(pitch_subset):
 	total_x = 0
 	total_z = 0
 	for pitch in pitch_subset:
-		total_x = total_x + pitch.rel_x
-		total_z = total_z + pitch.rel_z
+		total_x += pitch.rel_x
+		total_z += pitch.rel_z
 	avg_x = float(total_x/len(pitch_subset))
 	avg_z = float(total_z/len(pitch_subset))
 	return avg_x, avg_z
@@ -49,10 +49,29 @@ def averagePfx(pitch_subset):
 	total_x = 0
 	total_z = 0
 	for pitch in pitch_subset:
-		total_x = total_x + pitch.pfx_x
-		total_z = total_z + pitch.pfx_z
+		total_x += pitch.pfx_x
+		total_z += pitch.pfx_z
 	avg_pfx_x = float(total_x/len(pitch_subset))
 	avg_pfx_z = float(total_z/len(pitch_subset))
 	return avg_pfx_x, avg_pfx_z
+
+def strikeFrequency(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0
+	subset_total = len(pitch_subset)
+	strike_count = 0
+	ball_count = 0
+	contact_count = 0
+	for pitch in pitch_subset:
+		if pitch.outcome == 'S':
+			strike_count += 1
+		elif pitch.outcome == 'B':
+			ball_count += 1
+		elif pitch.outcome == 'X':
+			contact_count += 1
+	strike_freq = float(strike_count / subset_total)
+	return strike_freq
+
+
 
 
