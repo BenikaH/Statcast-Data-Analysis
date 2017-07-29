@@ -10,7 +10,7 @@ from pitching_data_functions import *
 pitcher_name = 'Wainwright'
 pitcher_data_file = 'wainwright_2017.csv'
 
-pitcher1 = Pitcher('Wainwright','wainwright_2017.csv')
+pitcher1 = Pitcher(pitcher_name, pitcher_data_file)
 pitcher1.makeGames()
 for game in pitcher1.game_list:
 	game.runPipeline()
