@@ -3,7 +3,7 @@ import numpy as np
 
 class Pitch(object):
 	def __init__(self, date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome):
-		self.pitch_date = date
+		self.pitch_date = parseDate(date)
 		self.pitch_type = pitch_type
 		if velocity.isalpha():
 			self.velocity = 0

@@ -90,6 +90,40 @@ def strikeFrequency(pitch_subset, contact_counts):
 		strike_freq = float(strike_count / subset_total)
 	return strike_freq
 
+def parseDate(date):
+	i = 0
+	while i < len(date):
+		if date[i] == '/':
+			slash1 = i
+			break
+		i += 1
+	i += 1
+
+	while i < len(date):
+		if date[i] == '/':
+			slash2 = i
+			break
+		i += 1
+	mm = date[0:slash1]
+	dd = date[slash1+1:slash2]
+	yy = date[slash2+1:len(date)]
+
+	new_date = yy
+	if len(mm) == 1:
+		new_date += '0'
+		new_date += mm
+	else:
+		new_date += mm
+
+	if len(dd) == 1:
+		new_date += '0'
+		new_date += dd
+	else:
+		new_date += dd
+
+	new_date = int(date)
+	return new_date
+
 
 
 
