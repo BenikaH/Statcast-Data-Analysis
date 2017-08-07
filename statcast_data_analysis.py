@@ -1,5 +1,7 @@
 import numpy as np
 import csv
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge
 
 def averageVelocity(pitch_subset, velocity):
 	if len(pitch_subset) == 0:
@@ -173,9 +175,10 @@ rel_z = []
 
 result_date = np.loadtxt('wainwright_game_summary.csv', delimiter=',',usecols = (0,), unpack = True)
 result_era = np.loadtxt('wainwright_game_summary.csv', delimiter=',',usecols = (5,), unpack = True)
+QS = np.loadtxt('wainwright_game_summary.csv', delimiter=',',usecols = (6,), unpack = True)
 
-with open('wainwright_2017_processed.csv', newline='') as f:
-    reader = csv.reader(f)
+with open('wainwright_2017_processed.csv', newline='') as file:
+    reader = csv.reader(file)
     for row in reader:
         pitch_type.append(row[0])
         date.append(row[1])
@@ -327,5 +330,21 @@ X[5,28] = avg_vel_separation[3]
 X[5,31] = avg_vel_separation[6]
 X[5,33] = avg_vel_separation[8]
 X[5,34] = avg_vel_separation[9]
+
+y = QS
+X1 = np.zeros((19,2))
+
+for i in range(len(wainwright_games)):
+	X1[i,0] = wainwright_games[i].game_vel_FF - avg_vel_FF
+	X1[i,1] = wainwright_games[i].game_freq_CU - avg_freq_CU
+
+from sklearn.neighbors import KNeighborsClassifier
+
+X_train, X_test, y_train, y_test = train_test_split(X1, y, random_state=0)
+
+clf = KNeighborsClassifier(n_neighbors=1).fit(X_train, y_train)
+
+print("Training set score: {:.2f}".format(clf.score(X_train, y_train)))
+print("Test set score: {:.2f}".format(clf.score(X_test, y_test)))
 
 
