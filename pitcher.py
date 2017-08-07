@@ -58,6 +58,10 @@ class Pitcher(object):
 		self.result_eras = []
 		self.quality_start = []
 
+		self.fastball_pitches = []
+		self.offspeed_pitches = []
+		self.type_other = []
+
 	def importPitches(self, filename):
 		with open(filename, newline='') as file:
 		    reader = csv.reader(file)
@@ -109,5 +113,25 @@ class Pitcher(object):
 		self.result_dates = np.loadtxt(filename, delimiter=',',usecols = (0,), unpack = True)
 		self.result_eras = np.loadtxt(filename, delimiter=',',usecols = (5,), unpack = True)
 		self.quality_start = np.loadtxt(filename, delimiter=',',usecols = (6,), unpack = True)
+
+	def classifyPitches(self):
+		for pitch in self.pitch_list:
+			if pitch.pitch_type == 'FF' or pitch.pitch_type == 'FA' or pitch.pitch_type == 'FT' or pitch.pitch_type == 'FC' or pitch.pitch_type == 'FS' or pitch.pitch_type == 'SI' or pitch.pitch_type == 'SF':
+				self.fastball_pitches.append(pitch)
+			elif pitch.pitch_type == 'SL' or pitch.pitch_type == 'CH' or pitch.pitch_type == 'CU' or pitch.pitch_type == 'CB' or pitch.pitch_type == 'KC' or pitch.pitch_type == 'KN' or pitch.pitch_type == 'EP':
+				self.offspeed_pitches.append(pitch)
+			else:
+				self.type_other.append(pitch)
+
+	def classifyMetrics(self):
+		self.number_fastballs = len(self.fastball_pitches)
+		self.number_offspeed = len(self.offspeed_pitches)
+
+		self.avg_fastball_vel = averageVelocity(self.fastball_pitches)
+		self.fastball_freq = float(self.number_fastballs/(self.number_fastballs + self.number_offspeed))
+
+	def runClassifyPipeline(self):
+		self.classifyPitches()
+		self.classifyMetrics()
 
 

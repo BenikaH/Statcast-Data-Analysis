@@ -13,6 +13,9 @@ class Game(object):
 		self.game_sinkers = []
 		self.game_changes = []
 		self.game_non_classified = []
+		self.fastball_pitches = []
+		self.offspeed_pitches = []
+		self.type_other = []
 
 		self.pitch_count = 0
 
@@ -71,6 +74,9 @@ class Game(object):
 
 		self.game_vel_separation = pitchSeparation(self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH)
 
+	def classifyMetrics(self):
+		pass
+
 	def sortPitches(self):
 		for pitch in self.game_pitches:
 			if pitch.pitch_type == 'FF':
@@ -86,6 +92,15 @@ class Game(object):
 			else:
 				self.game_non_classified.append(pitch)
 
+	def classifyPitches(self):
+		for pitch in self.game_pitches:
+			if pitch.pitch_type == 'FF' or pitch.pitch_type == 'FA' or pitch.pitch_type == 'FT' or pitch.pitch_type == 'FC' or pitch.pitch_type == 'FS' or pitch.pitch_type == 'SI' or pitch.pitch_type == 'SF':
+				self.fastball_pitches.append(pitch)
+			elif pitch.pitch_type == 'SL' or pitch.pitch_type == 'CH' or pitch.pitch_type == 'CU' or pitch.pitch_type == 'CB' or pitch.pitch_type == 'KC' or pitch.pitch_type == 'KN' or pitch.pitch_type == 'EP':
+				self.offspeed_pitches.append(pitch)
+			else:
+				self.type_other.append(pitch)
+
 	def outputData(self):
 		output_row = np.array([self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH, \
 		self.game_freq_FF, self.game_freq_CU, self.game_freq_FC, self.game_freq_SI, self.game_freq_CH, \
@@ -97,7 +112,11 @@ class Game(object):
 		self.game_vel_separation[8], self.game_vel_separation[9]])
 		return output_row
 
-	def runPipeline(self):
+	def runMainPipeline(self):
 		self.sortPitches()
 		self.calcMetrics()
 
+
+	def runClassifyPipeline(self):
+		self.classifyPitches()
+		self.classifyMetrics()

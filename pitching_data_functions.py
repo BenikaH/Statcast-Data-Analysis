@@ -121,7 +121,7 @@ def parseDate(date):
 	else:
 		new_date += dd
 
-	new_date = int(date)
+	new_date = int(new_date)
 	return new_date
 
 

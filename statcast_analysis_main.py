@@ -13,7 +13,7 @@ pitcher_data_file = 'martinez_2017.csv'
 pitcher1 = Pitcher(pitcher_name, pitcher_data_file)
 pitcher1.makeGames()
 for game in pitcher1.game_list:
-	game.runPipeline()
+	game.runMainPipeline()
 
 print(pitcher1.name)
 for game in pitcher1.game_list:

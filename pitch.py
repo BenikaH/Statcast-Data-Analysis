@@ -1,5 +1,6 @@
 # Pitch object class
 import numpy as np
+from pitching_data_functions import *
 
 class Pitch(object):
 	def __init__(self, date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome):
