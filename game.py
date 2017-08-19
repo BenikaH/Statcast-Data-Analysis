@@ -9,6 +9,7 @@ class Game(object):
 		self.game_pitches = []
 		self.game_fastballs = []
 		self.game_curveballs = []
+		self.game_sliders = []
 		self.game_cutters = []
 		self.game_sinkers = []
 		self.game_changes = []
@@ -44,6 +45,8 @@ class Game(object):
 		self.game_relz_CH = 0
 
 		self.game_vel_separation = []
+
+		self.workload = 0
 
 	def calcMetrics(self):
 		self.pitch_count = len(self.game_pitches)
@@ -101,6 +104,32 @@ class Game(object):
 			else:
 				self.type_other.append(pitch)
 
+	def sortPitches2(self):
+		for pitch in self.game_pitches:
+			if pitch.pitch_type == 'FF' or pitch.pitch_type == 'FA' or pitch.pitch_type == 'FT' or pitch.pitch_type == 'FC' or pitch.pitch_type == 'FS' or pitch.pitch_type == 'SI' or pitch.pitch_type == 'SF':
+				self.game_fastballs.append(pitch)
+			elif pitch.pitch_type == 'CU' or pitch.pitch_type == 'CB' or pitch.pitch_type == 'KC':
+				self.game_curveballs.append(pitch)
+			elif pitch.pitch_type == 'SL':
+				self.game_sliders.append(pitch)
+			elif pitch.pitch_type == 'CH' or pitch.pitch_type == 'KN':
+				self.game_changes.append(pitch)
+			else:
+				self.game_non_classified.append(pitch)
+
+	def calcWorkload(self):
+		wFA = 1
+		wCU = .963
+		wCH = .866
+		wSL = .988
+		numFA = len(self.game_fastballs)
+		numCU = len(self.game_curveballs)
+		numCH = len(self.game_changes)
+		numSL = len(self.game_sliders)
+		self.workload = (numFA * wFA) + (numCU * wCU) + (numCH * wCH) + (numSL * wSL)
+
+
+
 	def outputData(self):
 		output_row = np.array([self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH, \
 		self.game_freq_FF, self.game_freq_CU, self.game_freq_FC, self.game_freq_SI, self.game_freq_CH, \
@@ -120,3 +149,7 @@ class Game(object):
 	def runClassifyPipeline(self):
 		self.classifyPitches()
 		self.classifyMetrics()
+
+	def runWorkloadPipeline(self):
+		self.sortPitches2()
+		self.calcWorkload()
