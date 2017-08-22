@@ -1,5 +1,9 @@
 # Functions to support the statcast data analysis
 import numpy as np
+import csv
+from pitch import *
+from game import *
+from pitcher import *
 
 def averageVelocity(pitch_subset):
 	if len(pitch_subset) == 0:
@@ -10,8 +14,10 @@ def averageVelocity(pitch_subset):
 	avg_vel = float(total_vel/len(pitch_subset))
 	return avg_vel
 
-def pitchFrequency(pitch_subset, N_TOTAL):
-	freq = len(pitch_subset) / N_TOTAL
+def pitchFrequency(pitch_subset, all_pitches):
+	N_TOTAL = len(all_pitches)
+	N_TYPE = len(pitch_subset)
+	freq = N_TYPE / N_TOTAL
 	return freq
 
 def velocityVariance(pitch_subset):
@@ -22,6 +28,15 @@ def velocityVariance(pitch_subset):
 		vel_array.append(pitch.velocity)
 	vel_array = np.array(vel_array)
 	return vel_array.var()
+
+def averageSpin(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0
+	spin_array = []
+	for pitch in pitch_subset:
+		spin_array.append(pitch.spin_rate)
+	spin_array = np.array(spin_array)
+	return spin_array.mean()
 
 def averageRelease(pitch_subset):
 	if len(pitch_subset) == 0:
@@ -34,6 +49,15 @@ def averageRelease(pitch_subset):
 	avg_x = float(total_x/len(pitch_subset))
 	avg_z = float(total_z/len(pitch_subset))
 	return avg_x, avg_z
+
+def averageExtension(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0
+	ext_array = []
+	for pitch in pitch_subset:
+		ext_array.append(pitch.rel_ext)
+	ext_array = np.array(ext_array)
+	return ext_array.mean()
 
 def pitchSeparation(pitch1, pitch2, pitch3, pitch4, pitch5):
 	separation_list = []
@@ -90,39 +114,80 @@ def strikeFrequency(pitch_subset, contact_counts):
 		strike_freq = float(strike_count / subset_total)
 	return strike_freq
 
-def parseDate(date):
-	i = 0
-	while i < len(date):
-		if date[i] == '/':
-			slash1 = i
-			break
-		i += 1
-	i += 1
+def zoneDistribution(pitch_subset):
+	zone_dist = np.zeros(14)
+	N_TOTAL = 0
+	for pitch in pitch_subset:
+		if not pitch.zone == 0:
+			i = pitch.zone - 1
+			zone_dist[i] += 1
+			N_TOTAL += 1
+	zone_dist = zone_dist / N_TOTAL
+	return zone_dist
 
-	while i < len(date):
-		if date[i] == '/':
-			slash2 = i
-			break
-		i += 1
-	mm = date[0:slash1]
-	dd = date[slash1+1:slash2]
-	yy = date[slash2+1:len(date)]
+def zoneStrikes(pitch_subset):
+	ZS = 0
+	N_TOTAL = 0
+	for pitch in pitch_subset:
+		if not pitch.zone == 0:
+			N_TOTAL += 1
+			if pitch.zone > 0 and pitch.zone < 10:
+				ZS += 1
+	ZS_PROP = float(ZS / N_TOTAL)
+	return ZS_PROP
 
-	new_date = yy
-	if len(mm) == 1:
-		new_date += '0'
-		new_date += mm
-	else:
-		new_date += mm
+def zoneLevels(pitch_subset):
+	top_out = 0
+	top = 0
+	mid = 0
+	bottom = 0
+	bottom_out = 0
+	N_TOTAL = 0
+	for pitch in pitch_subset:
+		if not pitch.zone == 0:
+			N_TOTAL += 1
+			if pitch.zone == 11 or pitch.zone == 12:
+				top_out += 1
+			elif pitch.zone > 0 and pitch.zone < 4:
+				top += 1
+			elif pitch.zone > 3 and pitch.zone < 7:
+				mid += 1
+			elif pitch.zone > 6 and pitch.zone < 10:
+				bottom += 1
+			elif pitch.zone == 13 or pitch.zone == 14:
+				bottom_out += 1
+	out_array = np.array([top_out, top, mid, bottom, bottom_out]) / N_TOTAL
+	return out_array
 
-	if len(dd) == 1:
-		new_date += '0'
-		new_date += dd
-	else:
-		new_date += dd
 
-	new_date = int(new_date)
-	return new_date
+def makePitchers(filename, pitcher_list):
+	curr_pitcher_ID = 9999 	# Current pitcher ID number
+	pitcher_count = len(pitcher_list) - 1
+	row_count = 0
+	with open(filename, newline='') as file:
+		reader = csv.reader(file)
+		for row in reader:
+			pitcher_ID = row[7]
+			date = row[1]
+			pitch_type = row[0]
+			velocity = row[2]
+			rel_x = row[3]
+			rel_z = row[4]
+			zone = row[14]
+			pfx_x = row[27]
+			pfx_z = row[28]
+			outcome = row[21]
+			spin_rate = row[56]
+			rel_ext = row[57]
+			if pitcher_ID == curr_pitcher_ID:
+				pitcher_list[pitcher_count].pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext))
+			else:
+				pitcher_list.append(Pitcher(row[5]))
+				curr_pitcher_ID = pitcher_ID
+				pitcher_count += 1
+				pitcher_list[pitcher_count].pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext))
+
+
 
 
 

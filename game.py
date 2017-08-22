@@ -6,150 +6,90 @@ from pitching_data_functions import *
 class Game(object):
 	def __init__(self, date):
 		self.date = date
-		self.game_pitches = []
-		self.game_fastballs = []
-		self.game_curveballs = []
-		self.game_sliders = []
-		self.game_cutters = []
-		self.game_sinkers = []
-		self.game_changes = []
-		self.game_non_classified = []
-		self.fastball_pitches = []
-		self.offspeed_pitches = []
+
+		self.pitch_list = []
+		self.FF = []
+		self.FT = []
+		self.FC = []
+		self.SI = []
+		self.SL = []
+		self.CH = []
+		self.CU = []
+		self.KC = []
+		self.KN = []
+		self.NC = []
+
+		self.all_fastballs = []
+		self.all_offspeed = []
 		self.type_other = []
+		self.pitch_type_list = [self.FF, self.FT, self.FC, self.SI, self.SL, self.CH, self.CU, self.KC, self.KN, self.NC]
+		self.pitch_type_names = ['FF','FT','FC','SI','SL','CH','CU','KC','KN','NC']
+		self.pitch_class_list = [self.all_fastballs, self.all_offspeed, self.type_other]
+		self.pitch_class_name = ['Fastballs','Offspeed','Other']
 
 		self.pitch_count = 0
 
-		self.game_vel_FF = 0
-		self.game_vel_CU = 0
-		self.game_vel_FC = 0
-		self.game_vel_SI = 0
-		self.game_vel_CH = 0
-
-		self.game_freq_FF = 0
-		self.game_freq_CU = 0
-		self.game_freq_FC = 0
-		self.game_freq_SI = 0
-		self.game_freq_CH = 0
-
-		self.game_relx_FF = 0
-		self.game_relx_CU = 0
-		self.game_relx_FC = 0
-		self.game_relx_SI = 0
-		self.game_relx_CH = 0
-
-		self.game_relz_FF = 0
-		self.game_relz_CU = 0
-		self.game_relz_FC = 0
-		self.game_relz_SI = 0
-		self.game_relz_CH = 0
-
-		self.game_vel_separation = []
-
-		self.workload = 0
 
 	def calcMetrics(self):
-		self.pitch_count = len(self.game_pitches)
-
-		self.game_vel_FF = averageVelocity(self.game_fastballs)
-		self.game_vel_CU = averageVelocity(self.game_curveballs)
-		self.game_vel_FC = averageVelocity(self.game_cutters)
-		self.game_vel_SI = averageVelocity(self.game_sinkers)
-		self.game_vel_CH = averageVelocity(self.game_changes)
-
-		self.game_freq_FF = pitchFrequency(self.game_fastballs, self.pitch_count)
-		self.game_freq_CU = pitchFrequency(self.game_curveballs, self.pitch_count)
-		self.game_freq_FC = pitchFrequency(self.game_cutters, self.pitch_count)
-		self.game_freq_SI = pitchFrequency(self.game_sinkers, self.pitch_count)
-		self.game_freq_CH = pitchFrequency(self.game_changes, self.pitch_count)
-
-		self.game_relx_FF, self.game_relz_FF = averageRelease(self.game_fastballs)
-		self.game_relx_CU, self.game_relz_CU = averageRelease(self.game_curveballs)
-		self.game_relx_FC, self.game_relz_FC = averageRelease(self.game_cutters)
-		self.game_relx_SI, self.game_relz_SI = averageRelease(self.game_sinkers)
-		self.game_relx_CH, self.game_relz_CH = averageRelease(self.game_changes)
-
-		self.game_velvar_FF = velocityVariance(self.game_fastballs)
-		self.game_velvar_CU = velocityVariance(self.game_curveballs)
-		self.game_velvar_FC = velocityVariance(self.game_cutters)
-		self.game_velvar_SI = velocityVariance(self.game_sinkers)
-		self.game_velvar_CH = velocityVariance(self.game_changes)
-
-		self.game_vel_separation = pitchSeparation(self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH)
+		pass
 
 	def classifyMetrics(self):
 		pass
 
 	def sortPitches(self):
-		for pitch in self.game_pitches:
+		for pitch in self.pitch_list:
 			if pitch.pitch_type == 'FF':
-				self.game_fastballs.append(pitch)
-			elif pitch.pitch_type == 'CU':
-				self.game_curveballs.append(pitch)
+				self.FF.append(pitch)
+			elif pitch.pitch_type == 'FT':
+				self.FT.append(pitch)
 			elif pitch.pitch_type == 'FC':
-				self.game_cutters.append(pitch)
+				self.FC.append(pitch)
 			elif pitch.pitch_type == 'SI':
-				self.game_sinkers.append(pitch)
+				self.SI.append(pitch)
+			elif pitch.pitch_type == 'SL':
+				self.SL.append(pitch)
 			elif pitch.pitch_type == 'CH':
-				self.game_changes.append(pitch)
+				self.CH.append(pitch)
+			elif pitch.pitch_type == 'CU' or pitch.pitch_type == 'CB':
+				self.CU.append(pitch)
+			elif pitch.pitch_type == 'KC':
+				self.KC.append(pitch)
+			elif pitch.pitch_type == 'KN':
+				self.KN.append(pitch)
 			else:
-				self.game_non_classified.append(pitch)
+				self.NC.append(pitch)
 
 	def classifyPitches(self):
 		for pitch in self.game_pitches:
 			if pitch.pitch_type == 'FF' or pitch.pitch_type == 'FA' or pitch.pitch_type == 'FT' or pitch.pitch_type == 'FC' or pitch.pitch_type == 'FS' or pitch.pitch_type == 'SI' or pitch.pitch_type == 'SF':
-				self.fastball_pitches.append(pitch)
+				self.all_fastballs.append(pitch)
 			elif pitch.pitch_type == 'SL' or pitch.pitch_type == 'CH' or pitch.pitch_type == 'CU' or pitch.pitch_type == 'CB' or pitch.pitch_type == 'KC' or pitch.pitch_type == 'KN' or pitch.pitch_type == 'EP':
-				self.offspeed_pitches.append(pitch)
+				self.all_offspeed.append(pitch)
 			else:
 				self.type_other.append(pitch)
-
-	def sortPitches2(self):
-		for pitch in self.game_pitches:
-			if pitch.pitch_type == 'FF' or pitch.pitch_type == 'FA' or pitch.pitch_type == 'FT' or pitch.pitch_type == 'FC' or pitch.pitch_type == 'FS' or pitch.pitch_type == 'SI' or pitch.pitch_type == 'SF':
-				self.game_fastballs.append(pitch)
-			elif pitch.pitch_type == 'CU' or pitch.pitch_type == 'CB' or pitch.pitch_type == 'KC':
-				self.game_curveballs.append(pitch)
-			elif pitch.pitch_type == 'SL':
-				self.game_sliders.append(pitch)
-			elif pitch.pitch_type == 'CH' or pitch.pitch_type == 'KN':
-				self.game_changes.append(pitch)
-			else:
-				self.game_non_classified.append(pitch)
 
 	def calcWorkload(self):
 		wFA = 1
 		wCU = .963
 		wCH = .866
 		wSL = .988
-		numFA = len(self.game_fastballs)
-		numCU = len(self.game_curveballs)
-		numCH = len(self.game_changes)
-		numSL = len(self.game_sliders)
+		numFA = len(self.all_fastballs)
+		numCU = len(self.CU)
+		numCH = len(self.CH)
+		numSL = len(self.SL)
 		self.workload = (numFA * wFA) + (numCU * wCU) + (numCH * wCH) + (numSL * wSL)
 
-
-
 	def outputData(self):
-		output_row = np.array([self.game_vel_FF, self.game_vel_CU, self.game_vel_FC, self.game_vel_SI, self.game_vel_CH, \
-		self.game_freq_FF, self.game_freq_CU, self.game_freq_FC, self.game_freq_SI, self.game_freq_CH, \
-		self.game_relx_FF, self.game_relx_CU, self.game_relx_FC, self.game_relx_SI, self.game_relx_CH, \
-		self.game_relz_FF, self.game_relz_CU, self.game_relz_FC, self.game_relz_SI, self.game_relz_CH, \
-		self.game_velvar_FF, self.game_velvar_CU, self.game_velvar_FC, self.game_velvar_SI, self.game_velvar_CH, \
-		self.game_vel_separation[0], self.game_vel_separation[1], self.game_vel_separation[2], self.game_vel_separation[3], \
-		self.game_vel_separation[4], self.game_vel_separation[5], self.game_vel_separation[6], self.game_vel_separation[7], \
-		self.game_vel_separation[8], self.game_vel_separation[9]])
-		return output_row
+		pass
 
 	def runMainPipeline(self):
 		self.sortPitches()
 		self.calcMetrics()
-
 
 	def runClassifyPipeline(self):
 		self.classifyPitches()
 		self.classifyMetrics()
 
 	def runWorkloadPipeline(self):
-		self.sortPitches2()
+		self.sortPitches()
 		self.calcWorkload()
