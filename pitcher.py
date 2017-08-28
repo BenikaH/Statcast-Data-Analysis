@@ -21,6 +21,7 @@ class Pitcher(object):
 		self.KC = []
 		self.KN = []
 		self.NC = []
+		self.all_pitches = []
 
 		self.all_fastballs = []
 		self.all_offspeed = []
@@ -73,24 +74,68 @@ class Pitcher(object):
 		for pitch in self.pitch_list:
 			if pitch.pitch_type == 'FF':
 				self.FF.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'FT':
 				self.FT.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'FC':
 				self.FC.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'SI':
 				self.SI.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'SL':
 				self.SL.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'CH':
 				self.CH.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'CU' or pitch.pitch_type == 'CB':
 				self.CU.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'KC':
 				self.KC.append(pitch)
+				self.all_pitches.append(pitch)
 			elif pitch.pitch_type == 'KN':
 				self.KN.append(pitch)
+				self.all_pitches.append(pitch)
 			else:
 				self.NC.append(pitch)
+
+	def pitchProportion(self):
+		N_TOTAL = len(self.FF) + len(self.FT) + len(self.FC) + len(self.SI) + len(self.SL) + len(self.CH) + \
+		len(self.CU) + len(self.KC) + len(self.KN)
+		pitch_type_prop = np.zeros(len(self.pitch_type_list) - 1)
+		for i in range(len(self.pitch_type_list) - 1):
+			if len(self.pitch_type_list[i]) > 10:
+				pitch_type_prop[i] = len(self.pitch_type_list[i]) / N_TOTAL
+			else:
+				pitch_type_prop[i] = 0
+		return pitch_type_prop
+
+	def primary_offspeed(self):
+		N_SL = len(self.SL)
+		N_CH = len(self.CH)
+		N_CU = len(self.CU)
+		N_KC = len(self.KC)
+		if N_SL >= N_CH and N_SL >= N_CU and N_SL >= N_KC:
+			offspeed_vel = averageVelocity(self.SL)
+			offspeed_pfx_x, offspeed_pfx_z = averageRelease(self.SL)
+			offspeed_spin = averageSpin(self.SL)
+		elif N_CH >= N_SL and N_CH >= N_CU and N_CH >= N_KC:
+			offspeed_vel = averageVelocity(self.CH)
+			offspeed_pfx_x, offspeed_pfx_z = averageRelease(self.CH)
+			offspeed_spin = averageSpin(self.CH)
+		elif N_CU >= N_SL and N_CU >= N_CH and N_CU >= N_KC:
+			offspeed_vel = averageVelocity(self.CU)
+			offspeed_pfx_x, offspeed_pfx_z = averageRelease(self.CU)
+			offspeed_spin = averageSpin(self.CU)
+		elif N_KC >= N_SL and N_KC >= N_CU and N_KC >= N_CH:
+			offspeed_vel = averageVelocity(self.KC)
+			offspeed_pfx_x, offspeed_pfx_z = averageRelease(self.KC)
+			offspeed_spin = averageSpin(self.KC)
+		return offspeed_vel, offspeed_pfx_x, offspeed_pfx_z, offspeed_spin				
+
 
 	def pitchesThrown(self):
 		diff_pitches = 0
@@ -98,7 +143,6 @@ class Pitcher(object):
 			if len(self.pitch_type_list[i]) > 0:
 				diff_pitches += 1
 		return diff_pitches
-
 
 	def addGameResults(self, filename):
 		self.result_dates = np.loadtxt(filename, delimiter=',',usecols = (0,), unpack = True)
@@ -125,4 +169,32 @@ class Pitcher(object):
 		self.classifyPitches()
 		self.classifyMetrics()
 
+def averageVelocity(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0
+	total_vel = 0
+	for pitch in pitch_subset:
+		total_vel += pitch.velocity
+	avg_vel = float(total_vel/len(pitch_subset))
+	return avg_vel
 
+def averageSpin(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0
+	spin_array = []
+	for pitch in pitch_subset:
+		spin_array.append(pitch.spin_rate)
+	spin_array = np.array(spin_array)
+	return spin_array.mean()
+
+def averageRelease(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0, 0
+	total_x = 0
+	total_z = 0
+	for pitch in pitch_subset:
+		total_x += pitch.rel_x
+		total_z += pitch.rel_z
+	avg_x = float(total_x/len(pitch_subset))
+	avg_z = float(total_z/len(pitch_subset))
+	return avg_x, avg_z

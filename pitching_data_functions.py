@@ -29,6 +29,15 @@ def velocityVariance(pitch_subset):
 	vel_array = np.array(vel_array)
 	return vel_array.var()
 
+def velocitySTDev(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0
+	vel_array = []
+	for pitch in pitch_subset:
+		vel_array.append(pitch.velocity)
+	vel_array = np.array(vel_array)
+	return vel_array.std()	
+
 def averageSpin(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0
@@ -49,6 +58,23 @@ def averageRelease(pitch_subset):
 	avg_x = float(total_x/len(pitch_subset))
 	avg_z = float(total_z/len(pitch_subset))
 	return avg_x, avg_z
+
+def averageRelease2D(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0, 0
+	x = []
+	z = []
+	for pitch in pitch_subset:
+		x.append(pitch.rel_x)
+		z.append(pitch.rel_z)
+	x = np.array(x)
+	z = np.array(z)
+	avg_x = x.mean()
+	avg_z = z.mean()
+	r2 = np.power(x,2) + np.power(z,2)
+	r = np.sqrt(r2)
+	r_avg = np.mean(r)
+	return r_avg
 
 def averageExtension(pitch_subset):
 	if len(pitch_subset) == 0:
@@ -79,7 +105,7 @@ def averagePfx(pitch_subset):
 	avg_pfx_z = float(total_z/len(pitch_subset))
 	return avg_pfx_x, avg_pfx_z
 
-def releaseDeviation(pitch_subset):
+def deviationPfx(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
 	x_array = []
@@ -89,9 +115,57 @@ def releaseDeviation(pitch_subset):
 		z_array.append(pitch.pfx_z)
 	x_array = np.array(x_array)
 	z_array = np.array(z_array)
+	pfxDev_x = np.std(x_array)
+	pfxDev_z = np.std(z_array)
+	return pfxDev_x, pfxDev_z
+
+def releaseDeviation(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0, 0
+	x_array = []
+	z_array = []
+	for pitch in pitch_subset:
+		x_array.append(pitch.rel_x)
+		z_array.append(pitch.rel_z)
+	x_array = np.array(x_array)
+	z_array = np.array(z_array)
 	stdev_x = np.std(x_array)
 	stdev_z = np.std(z_array)
 	return stdev_x, stdev_z
+
+def releaseDeviation2D(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0, 0
+	x_array = []
+	z_array = []
+	for pitch in pitch_subset:
+		x_array.append(pitch.rel_x)
+		z_array.append(pitch.rel_z)
+	x_array = np.array(x_array)
+	z_array = np.array(z_array)
+	r2_array = np.power(x_array,2) + np.power(z_array,2)
+	r_array = np.sqrt(r2_array)
+	r_stdev = np.std(r_array)
+	return r_stdev
+
+def releaseEllipse(pitch_subset):
+	if len(pitch_subset) == 0:
+		return 0, 0
+	N_pitches = len(pitch_subset)
+	x_array = []
+	z_array = []
+	for pitch in pitch_subset:
+		x_array.append(pitch.rel_x)
+		z_array.append(pitch.rel_z)
+	x_array = np.array(x_array)
+	z_array = np.array(z_array)
+	stdev_x = np.std(x_array)
+	stdev_z = np.std(z_array)
+	MEx = (stdev_x/np.sqrt(N_pitches)) * 1.96
+	MEz = (stdev_z/np.sqrt(N_pitches)) * 1.96
+	A = np.pi * MEx * MEz
+	return A
+
 
 
 def strikeFrequency(pitch_subset, contact_counts):
