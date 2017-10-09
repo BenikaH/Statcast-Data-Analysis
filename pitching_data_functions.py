@@ -167,7 +167,6 @@ def releaseEllipse(pitch_subset):
 	return A
 
 
-
 def strikeFrequency(pitch_subset, contact_counts):
 	if len(pitch_subset) == 0:
 		return 0
@@ -233,6 +232,43 @@ def zoneLevels(pitch_subset):
 	out_array = np.array([top_out, top, mid, bottom, bottom_out]) / N_TOTAL
 	return out_array
 
+def inningVelocity(pitch_subset, last_inning):
+	inning_vel = np.zeros(last_inning)
+	inning_count = np.zeros(last_inning)
+	for pitch in pitch_subset:
+		i = pitch.inning - 1
+		if i < last_inning:
+			vel = pitch.velocity
+			inning_vel[i] += vel
+			inning_count += 1
+	inning_vel = inning_vel / inning_count
+	return inning_vel
+
+def inningVelocityChange(pitch_subset, last_inning):
+	inning_vel = np.zeros(last_inning)
+	inning_count = np.zeros(last_inning)
+	for pitch in pitch_subset:
+		i = pitch.inning - 1
+		if i < last_inning:
+			vel = pitch.velocity
+			inning_vel[i] += vel
+			inning_count += 1
+	inning_vel = inning_vel / inning_count
+	vel_change = (inning_vel - inning_vel[0]) / inning_vel[0]
+	return vel_change
+
+def inningReleaseChange(pitch_subset, last_inning):
+	inning_rel = np.zeros(last_inning)
+	inning_count = np.zeros(last_inning)
+	for pitch in pitch_subset:
+		i = pitch.inning - 1
+		if i < last_inning:
+			rel = pitch.rel_z
+			inning_rel[i] += rel
+			inning_count += 1
+	inning_rel = inning_rel / inning_count
+	rel_change = (inning_rel - inning_rel[0]) / inning_rel[0]
+	return rel_change
 
 def makePitchers(filename, pitcher_list):
 	curr_pitcher_ID = 9999 	# Current pitcher ID number
@@ -253,13 +289,14 @@ def makePitchers(filename, pitcher_list):
 			outcome = row[21]
 			spin_rate = row[56]
 			rel_ext = row[57]
+			inning = row[35]
 			if pitcher_ID == curr_pitcher_ID:
-				pitcher_list[pitcher_count].pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext))
+				pitcher_list[pitcher_count].pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext, inning))
 			else:
 				pitcher_list.append(Pitcher(row[5]))
 				curr_pitcher_ID = pitcher_ID
 				pitcher_count += 1
-				pitcher_list[pitcher_count].pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext))
+				pitcher_list[pitcher_count].pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext, inning))
 
 
 

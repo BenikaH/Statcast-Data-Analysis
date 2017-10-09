@@ -52,7 +52,8 @@ class Pitcher(object):
 				outcome = row[21]
 				spin_rate = row[56]
 				rel_ext = row[57]
-				self.pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext))
+				inning = row[35]
+				self.pitch_list.append(Pitch(date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext, inning))
 
 	def calcMetrics():
 		pass

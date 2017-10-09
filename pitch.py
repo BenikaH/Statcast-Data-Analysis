@@ -3,7 +3,7 @@ import numpy as np
 #from pitching_data_functions import *
 
 class Pitch(object):
-	def __init__(self, date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext):
+	def __init__(self, date, pitch_type, velocity, rel_x, rel_z, zone, pfx_x, pfx_z, outcome, spin_rate, rel_ext, inning):
 		self.pitch_date = parseDate(date)
 		self.pitch_type = pitch_type
 		if velocity.isalpha() or rel_x.isalpha() or rel_z.isalpha() or zone.isalpha() or pfx_x.isalpha() or pfx_z.isalpha() or spin_rate.isalpha() or rel_ext.isalpha():
@@ -16,6 +16,7 @@ class Pitch(object):
 			self.pfx_z = 0
 			self.spin_rate = 0
 			self.rel_ext = 0
+			self.inning = 0
 		else:
 			self.velocity = float(velocity)
 			self.rel_x = float(rel_x)
@@ -26,9 +27,10 @@ class Pitch(object):
 			self.outcome = outcome
 			self.spin_rate = float(spin_rate)
 			self.rel_ext = float(rel_ext)
+			self.inning = int(inning)
 
 	def getData(self):
-		output = np.array([self.pitch_date, self.pitch_type, self.velocity, self.rel_x, self.rel_z, self.zone, self.pfx_x, self.pfx_z, self.outcome, self.spin_rate, self.rel_ext])
+		output = np.array([self.pitch_date, self.pitch_type, self.velocity, self.rel_x, self.rel_z, self.zone, self.pfx_x, self.pfx_z, self.outcome, self.spin_rate, self.rel_ext, self.inning])
 		return output
 
 def parseDate(date):
