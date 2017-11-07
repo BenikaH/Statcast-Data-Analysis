@@ -5,6 +5,8 @@ from pitch import *
 from game import *
 from pitching_data_functions import *
 
+# Creates a Pitcher object
+# Stores all the pitches thrown by the pitcher and all games the pitcher appeared in
 class Pitcher(object):
 	def __init__(self, name):
 		self.name = name
@@ -36,7 +38,7 @@ class Pitcher(object):
 		self.result_eras = []
 		self.quality_start = []
 
-
+	# method to read line by line from a csv to create pitch objects for each statcast pitch entry and append to the pitcher's pitch list
 	def importPitches(self, filename):
 		with open(filename, newline='') as file:
 			reader = csv.reader(file)
@@ -58,6 +60,7 @@ class Pitcher(object):
 	def calcMetrics():
 		pass
 
+	# from the pitcher's pitch_list, make Game objects based on groupings of pitches with the same date
 	def makeGames(self):
 		game = 0
 		current_day = self.pitch_list[0].pitch_date
@@ -71,6 +74,7 @@ class Pitcher(object):
 				self.game_list.append(Game(current_day))
 				self.game_list[game].game_pitches.append(self.pitch_list[i])
 
+	# sort all of the pitches the pitcher has thrown into the type of pitch that was thrown
 	def sortPitches(self):
 		for pitch in self.pitch_list:
 			if pitch.pitch_type == 'FF':
@@ -103,6 +107,7 @@ class Pitcher(object):
 			else:
 				self.NC.append(pitch)
 
+	# returns an array with the proportions of each pitch type thrown. Order of the array is based on the pitch_type_list
 	def pitchProportion(self):
 		N_TOTAL = len(self.FF) + len(self.FT) + len(self.FC) + len(self.SI) + len(self.SL) + len(self.CH) + \
 		len(self.CU) + len(self.KC) + len(self.KN)
@@ -114,6 +119,8 @@ class Pitcher(object):
 				pitch_type_prop[i] = 0
 		return pitch_type_prop
 
+	# method to determine the average pitch data for a pitcher's primary offspeed pitch
+	# the "primary" offspeed is determined as the offspeed pitch type thrown the greatest number of times
 	def primary_offspeed(self):
 		N_SL = len(self.SL)
 		N_CH = len(self.CH)
@@ -137,7 +144,7 @@ class Pitcher(object):
 			offspeed_spin = averageSpin(self.KC)
 		return offspeed_vel, offspeed_pfx_x, offspeed_pfx_z, offspeed_spin				
 
-
+	# method to return the number of different pitch types a pitcher throws
 	def pitchesThrown(self):
 		diff_pitches = 0
 		for i in range(len(self.pitch_type_list)-1):
@@ -145,11 +152,13 @@ class Pitcher(object):
 				diff_pitches += 1
 		return diff_pitches
 
+	# method that reads the game results for a pitcher from a csv file.
 	def addGameResults(self, filename):
 		self.result_dates = np.loadtxt(filename, delimiter=',',usecols = (0,), unpack = True)
 		self.result_eras = np.loadtxt(filename, delimiter=',',usecols = (5,), unpack = True)
 		self.quality_start = np.loadtxt(filename, delimiter=',',usecols = (6,), unpack = True)
 
+	# method to classify all of the pitcher's pitches as either fastball or offspeed
 	def classifyPitches(self):
 		for pitch in self.pitch_list:
 			if pitch.pitch_type == 'FF' or pitch.pitch_type == 'FA' or pitch.pitch_type == 'FT' or pitch.pitch_type == 'FC' or pitch.pitch_type == 'FS' or pitch.pitch_type == 'SI' or pitch.pitch_type == 'SF':
@@ -159,6 +168,7 @@ class Pitcher(object):
 			else:
 				self.type_other.append(pitch)
 
+	# method that returns metrics on classified fastball/offspeed pitches
 	def classifyMetrics(self):
 		self.number_fastballs = len(self.all_fastballs)
 		self.number_offspeed = len(self.all_offspeed)
@@ -166,10 +176,13 @@ class Pitcher(object):
 		#self.avg_fastball_vel = averageVelocity(self.all_fastballs)
 		self.fastball_freq = float(self.number_fastballs/(self.number_fastballs + self.number_offspeed))
 
+	# pipeline to classify pitches as fastball/offspeed and cumpute metrics
 	def runClassifyPipeline(self):
 		self.classifyPitches()
 		self.classifyMetrics()
 
+# Note moved to pitching data functions file
+'''
 def averageVelocity(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0
@@ -199,3 +212,4 @@ def averageRelease(pitch_subset):
 	avg_x = float(total_x/len(pitch_subset))
 	avg_z = float(total_z/len(pitch_subset))
 	return avg_x, avg_z
+'''
