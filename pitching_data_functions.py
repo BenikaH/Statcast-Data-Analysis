@@ -5,6 +5,7 @@ from pitch import *
 from game import *
 from pitcher import *
 
+# function returns the average value of the pitch subset passed to it
 def averageVelocity(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0
@@ -14,12 +15,15 @@ def averageVelocity(pitch_subset):
 	avg_vel = float(total_vel/len(pitch_subset))
 	return avg_vel
 
+# function takes a pitch subset list and the total pitch list as parameters
+# returns the proportion of pitches that is the pitch subset out of the total pitches
 def pitchFrequency(pitch_subset, all_pitches):
 	N_TOTAL = len(all_pitches)
 	N_TYPE = len(pitch_subset)
 	freq = N_TYPE / N_TOTAL
 	return freq
 
+# returns the statical variance in the velocity of the pitch subset
 def velocityVariance(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0
@@ -29,6 +33,7 @@ def velocityVariance(pitch_subset):
 	vel_array = np.array(vel_array)
 	return vel_array.var()
 
+# returns the statical standard deviation of the velocity of the pitch subset
 def velocitySTDev(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0
@@ -38,6 +43,7 @@ def velocitySTDev(pitch_subset):
 	vel_array = np.array(vel_array)
 	return vel_array.std()	
 
+# function returns the average spin rate of the pitches in the subset
 def averageSpin(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0
@@ -47,6 +53,7 @@ def averageSpin(pitch_subset):
 	spin_array = np.array(spin_array)
 	return spin_array.mean()
 
+# function returns the average horizontal and vertical release point for pitches in the subset
 def averageRelease(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
@@ -59,6 +66,7 @@ def averageRelease(pitch_subset):
 	avg_z = float(total_z/len(pitch_subset))
 	return avg_x, avg_z
 
+# function returns the magnitude of the 2D vector comprised of the X and Z release point locations
 def averageRelease2D(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
@@ -76,6 +84,7 @@ def averageRelease2D(pitch_subset):
 	r_avg = np.mean(r)
 	return r_avg
 
+# function returns the distance from the pitching rubber to home plate at which the pitch was release
 def averageExtension(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0
@@ -85,6 +94,7 @@ def averageExtension(pitch_subset):
 	ext_array = np.array(ext_array)
 	return ext_array.mean()
 
+# returns an array of the separation in average velocity of all possible comparisons for 5 different pitches (10 data points)
 def pitchSeparation(pitch1, pitch2, pitch3, pitch4, pitch5):
 	separation_list = []
 	velocity_list = [pitch1, pitch2, pitch3, pitch4, pitch5]
@@ -93,6 +103,7 @@ def pitchSeparation(pitch1, pitch2, pitch3, pitch4, pitch5):
 			separation_list.append(velocity_list[i]-velocity_list[j])
 	return separation_list
 
+# function returns the average horizontal and vertical break of a pitch subset
 def averagePfx(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
@@ -105,6 +116,7 @@ def averagePfx(pitch_subset):
 	avg_pfx_z = float(total_z/len(pitch_subset))
 	return avg_pfx_x, avg_pfx_z
 
+# function returns the statical standard deviation of the horizontal and vertical break of a pitch subset
 def deviationPfx(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
@@ -119,6 +131,7 @@ def deviationPfx(pitch_subset):
 	pfxDev_z = np.std(z_array)
 	return pfxDev_x, pfxDev_z
 
+# function returns the statical standard deviation of the horizontal and vertical release location of a pitch subset
 def releaseDeviation(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
@@ -133,6 +146,7 @@ def releaseDeviation(pitch_subset):
 	stdev_z = np.std(z_array)
 	return stdev_x, stdev_z
 
+# function returns the statical standard deviation of the 2D release point vector of the pitch subset
 def releaseDeviation2D(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
@@ -148,6 +162,7 @@ def releaseDeviation2D(pitch_subset):
 	r_stdev = np.std(r_array)
 	return r_stdev
 
+# function returns the area of an elipse formed by 90% confidence intervals of the horizontal and vertical release location of a pitch subset
 def releaseEllipse(pitch_subset):
 	if len(pitch_subset) == 0:
 		return 0, 0
@@ -166,7 +181,7 @@ def releaseEllipse(pitch_subset):
 	A = np.pi * MEx * MEz
 	return A
 
-
+# function returns the frequency which pitches in a subset were strikes. User has the option to count pitches with contact as strikes or not
 def strikeFrequency(pitch_subset, contact_counts):
 	if len(pitch_subset) == 0:
 		return 0
@@ -187,6 +202,7 @@ def strikeFrequency(pitch_subset, contact_counts):
 		strike_freq = float(strike_count / subset_total)
 	return strike_freq
 
+# function returns and array of the proportion a pitch was located into each of 13 possible zones
 def zoneDistribution(pitch_subset):
 	zone_dist = np.zeros(14)
 	N_TOTAL = 0
@@ -209,6 +225,7 @@ def zoneStrikes(pitch_subset):
 	ZS_PROP = float(ZS / N_TOTAL)
 	return ZS_PROP
 
+# function returns the proportion that the pitches in the pitch subset where in one of 5 vertical levels
 def zoneLevels(pitch_subset):
 	top_out = 0
 	top = 0
@@ -232,6 +249,8 @@ def zoneLevels(pitch_subset):
 	out_array = np.array([top_out, top, mid, bottom, bottom_out]) / N_TOTAL
 	return out_array
 
+# function returns the average velocity of pitches in the subset for each inning
+# Second parameter determines the last inning calculated. For example: some pitchers may not have thrown in the 9th inning
 def inningVelocity(pitch_subset, last_inning):
 	inning_vel = np.zeros(last_inning)
 	inning_count = np.zeros(last_inning)
@@ -244,6 +263,8 @@ def inningVelocity(pitch_subset, last_inning):
 	inning_vel = inning_vel / inning_count
 	return inning_vel
 
+# function returns the average velocity change of pitches in the subset for each inning compared to the first inning
+# Second parameter determines the last inning calculated. For example: some pitchers may not have thrown in the 9th inning
 def inningVelocityChange(pitch_subset, last_inning):
 	inning_vel = np.zeros(last_inning)
 	inning_count = np.zeros(last_inning)
@@ -257,6 +278,8 @@ def inningVelocityChange(pitch_subset, last_inning):
 	vel_change = (inning_vel - inning_vel[0]) / inning_vel[0]
 	return vel_change
 
+# function returns the release point change of pitches in the subset for each inning compared to the first inning
+# Second parameter determines the last inning calculated. For example: some pitchers may not have thrown in the 9th inning
 def inningReleaseChange(pitch_subset, last_inning):
 	inning_rel = np.zeros(last_inning)
 	inning_count = np.zeros(last_inning)
@@ -270,6 +293,7 @@ def inningReleaseChange(pitch_subset, last_inning):
 	rel_change = (inning_rel - inning_rel[0]) / inning_rel[0]
 	return rel_change
 
+# function that adds Pitcher objects to a provide list (second parameter) based on unique pitcher ID's provided from the csv data read
 def makePitchers(filename, pitcher_list):
 	curr_pitcher_ID = 9999 	# Current pitcher ID number
 	pitcher_count = len(pitcher_list) - 1
